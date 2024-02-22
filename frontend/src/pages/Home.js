@@ -1,17 +1,19 @@
 import React, { useEffect, useState } from "react";
+import { useBirthdaysContext } from "../hooks/useBirthdaysContext";
 
 // components
 import BirthdayDetails from "../components/BirthdayDetails";
 import BirthdayForm from "../components/BirthdayForm";
 
 const Home = () => {
-  const [birthdays, setBirthdays] = useState(null);
+  const { birthdays, dispatch } = useBirthdaysContext();
+
   useEffect(() => {
     const fetchWorkouts = async () => {
       const response = await fetch("/api/birthdays");
       const json = await response.json();
       if (response.ok) {
-        setBirthdays(json);
+        dispatch({ type: "SET_BIRTHDAYS", payload: json });
       }
     };
 

@@ -1,6 +1,8 @@
 import React, { useState } from "react";
+import { useBirthdaysContext } from "../hooks/useBirthdaysContext";
 
 const BirthdayForm = () => {
+  const { dispatch } = useBirthdaysContext();
   const [name, setName] = useState("");
   const [surname, setSurname] = useState("");
   const [note, setNote] = useState("");
@@ -31,6 +33,7 @@ const BirthdayForm = () => {
       setBirthdate("");
       setError(null);
       console.log("new birthday added", json);
+      dispatch({ type: "CREATE_BIRTHDAY", payload: json });
     }
   };
 
