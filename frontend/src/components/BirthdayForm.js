@@ -37,6 +37,24 @@ const BirthdayForm = () => {
     }
   };
 
+  const handleFileUpload = async (files) => {
+    const file = files[0];
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await response.json();
+      console.log("File uploaded successfully:", data.url);
+      // Set the URL to state or pass it to your backend along with other form data
+    } catch (error) {
+      console.error("Error uploading file:", error);
+    }
+  };
+
   return (
     <form className="create" onSubmit={handleSubmit}>
       <h3>Add a Birthday</h3>
@@ -67,6 +85,12 @@ const BirthdayForm = () => {
         type="date"
         onChange={(e) => setBirthdate(e.target.value)}
         value={birthdate}
+      />
+      <label>Profile Picture</label>
+      <input
+        type="file"
+        accept="image/*"
+        onChange={(e) => handleFileUpload(e.target.files)}
       />
       <button>Add Birthday</button>
     </form>
