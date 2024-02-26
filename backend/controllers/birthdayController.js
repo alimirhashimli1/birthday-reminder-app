@@ -1,5 +1,29 @@
 const Birthday = require("../models/birthdayModel");
 const mongoose = require("mongoose");
+const { Storage } = require("@google-cloud/storage");
+const multer = require("multer");
+const multerGoogleStorage = require("multer-google-storage");
+
+// Create a new instance of Storage
+const storage = new Storage({
+  projectId: "vivid-tuner-415422",
+  keyFilename: "../mykey.json",
+});
+
+// name of the bucket where you want to store the images
+const bucketName = storage.bucket("cakedaybuddyimages");
+
+// set up multer for file upload
+const upload = multer({
+  storage: multerGoogleStorage.storageEngine({
+    bucket: bucketName,
+    projectId: "vivid-tuner-415422",
+    keyFilename: "../mykey.json",
+    fileName: function (req, file, cb) {
+      cb(null, Date.now().toString() + "-" + file.originalname);
+    },
+  }),
+});
 
 // get all birthdays
 const getBirthdays = async (req, res) => {
@@ -27,16 +51,37 @@ const getBirthday = async (req, res) => {
 
 // create a birthday
 const createBirthday = async (req, res) => {
-  const { name, surname, birthdate, note, picture } = req.body;
+  const { name, surname, birthdate, note } = req.body;
 
-  // add doc to db
+  // Upload picture to Google Cloud Storage
+  let pictureUrl = "";
+  if (req.file) {
+    try {
+      const file = req.file;
+      const blob = bucket.file(file.originalname);
+      const blobStream = blob.createWriteStream({
+        resumable: false,
+        metadata: {
+          contentType: file.mimetype,
+        },
+      });
+      blobStream.on("finish", () => {
+        pictureUrl = `https://storage.googleapis.com/${bucket.name}/${blob.name}`;
+      });
+      blobStream.end(file.buffer);
+    } catch (error) {
+      return res.status(500).json({ error: "Error uploading picture" });
+    }
+  }
+
+  // Add birthday to database
   try {
     const birthday = await Birthday.create({
       name,
       surname,
       birthdate,
       note,
-      picture,
+      picture: pictureUrl,
     });
     res.status(200).json(birthday);
   } catch (error) {

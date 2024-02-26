@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "vivid-tuner-415422",
+  "private_key_id": "0b934cde1c3bb3e432f7345827869a3c9a5c4bb0",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC7CeA2V/+/gY2h\nZCqrdi3V093UQP0lkEuP7xdXVTXr93s0GZRg1vzIwo4D+ZY4soikgnHcETPKHNFE\n2HGA4vyMEqdu2SlZofjjL/tqngQC2lEesnDsa/yWj5IJ3d7KHzlP8xaHc38et/2I\noQ4VQY1nHZdAsjDPd4mbxDfzbkBpeQA4DplhG+2umKSUfW5TqcRBUerOmcYLRYmy\nuHcZXjb6Yn/+EaNiJ1lE+VRQgFNZLiyXwQCpX2eTIIuoctldY6ot4qHr5rM+zL9d\njgrQfrYOXqGPR/n3BNca/XEzXuiuQU1VReZNLZFj+oQx9ZDYAo7fkOFkvsdCZF7v\nX+fBwX71AgMBAAECggEABSS9IflzCsbrCGprAvqVwZjZM5ZS79bDQTLLw0bQXAwa\n+wCOFEitPG8fPSw+rZH5UH7W1zyw3ijDN3+1RVxYohh8Or/lk3WxFLxTz2eHiDWN\nQAkbsmC42kIZ+8P6dbf8mT5/2ts5/nQEWJ7HNp3uH80QRQLxdS8eHWa8vCjGxC+3\n2+db4BW6sw4TiP1tcUBLGMW+78YohTcGImFJZD8Zk2v/GJXuJQvktgYduzaj5b2l\nb54j+H6/ytNsZzTmkbltMUrrGW6xIrjgFp+h6tIlQVDF/svbMZwWUlu3lb5XlM8y\nBGQppvDtPwWWJYOw2mG5tzKd1M21DC9ap7PkGVXSkQKBgQDn4KecsHENpnDvkVG7\nqXktQ0WhTroaDm4eN/KUC1UfQWZgTE1mXOoCscxo95v3YSAx48eQnJ/t0af1ks3A\nyjjuCbUm2K7e4mZceoJtFwXOzvImEWbFalGAFLbwDgUC71Et+cZQfhwq5vErarU6\nxJ+SILKyZ9NgxCHaY+sC9rsnJQKBgQDOfxKk1+2PaqjQGRYd4hYevgIZ6WZAufe4\njW12B+Su9ikK+s8tt+0nJMu5em7NMgnDjVzkVGDVQeJgg+ZBXATJCUeq9x91ju5H\nZsKrnbGRfmqgjjNO+Ymx8NtN6KxF0UsgcioaiOwWRqg8P58rfM7kUyafSR771T2a\nuy1U1YwXkQKBgA76ErlrKBIyou7GWxoc6yfCRZgSprCSKAiponBvfvMC3WLw6rrm\n23KLG2HYRGmpC1RNmxE7HJVWyltxPPrr1NuDIwE8U6cvxl7Ixu3W49gkw70zuIid\nwl/cdqhwr2AuJvcqP+XpD1ayDfe477W5B3l/xSsCy8NfR7R8aayKVTJFAoGBAMSn\nNc0xKjcz33LXAT4SSviaAYxFv7CSqnzii0UlvT52hZ3EP7wNdleZ7j5Ef/MA3VWT\nccytIs7VgM5jrsu943zFTrBdymL9bKUpEum3Mx0ZZFhlNC3Y7a49b80hcbbH3CEZ\nOEmu7g9E2QEPofkbUjkViymUzGIOsS2DZmdtO45RAoGAZENzgohWrk4jEoN4lCTX\ndX6fVfy0AKrE2rO7ogFdz+7djSlazvz1MphwhD4UGzRuL/8acw7sgOEA615BQMXc\nHU59sui9wq9kOU+BEOc0WozEGGDWnRjMpkeSwFOU8koNnSNj5YTjGPX3j+UjR6/y\nElriL4WvzFvtszBiO4R0TN4=\n-----END PRIVATE KEY-----\n",
+  "client_email": "cakedaybuddy@vivid-tuner-415422.iam.gserviceaccount.com",
+  "client_id": "102676768788462153723",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/cakedaybuddy%40vivid-tuner-415422.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
