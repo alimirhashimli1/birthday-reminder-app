@@ -6,20 +6,20 @@ const multerGoogleStorage = require("multer-google-storage");
 
 // Create a new instance of Storage
 const storage = new Storage({
-  projectId: "vivid-tuner-415422",
+  projectId: "vivid-tuner-415422", // Replace "your-project-id" with your actual Google Cloud project ID
   keyFilename: "../mykey.json",
 });
 
 // name of the bucket where you want to store the images
-const bucketName = storage.bucket("cakedaybuddyimages");
+const bucketName = "cakedaybuddyimages";
 
 // set up multer for file upload
 const upload = multer({
   storage: multerGoogleStorage.storageEngine({
     bucket: bucketName,
-    projectId: "vivid-tuner-415422",
+    projectId: "vivid-tuner-415422", // Replace "your-project-id" with your actual Google Cloud project ID
     keyFilename: "../mykey.json",
-    fileName: function (req, file, cb) {
+    filename: function (req, file, cb) {
       cb(null, Date.now().toString() + "-" + file.originalname);
     },
   }),
