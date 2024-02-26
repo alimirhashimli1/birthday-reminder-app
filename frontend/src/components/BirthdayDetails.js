@@ -16,6 +16,7 @@ const BirthdayDetails = ({ birthday }) => {
         {day}-{month}-{year}
       </p>
       <p className="birthday-note">{birthday.note}</p>
+      <img src={birthday.picture} alt="" width="100" height="100" />
     </div>
   );
 };

@@ -1,4 +1,5 @@
 const express = require("express");
+const multer = require("multer");
 
 const router = express.Router();
 const {
@@ -9,6 +10,9 @@ const {
   updateBirthday,
 } = require("../controllers/birthdayController");
 
+// Multer configuration for file upload
+const upload = multer({ dest: "uploads/" }); // Adjust the destination directory as needed
+
 // Get all birthdays
 router.get("/", getBirthdays);
 
@@ -16,7 +20,7 @@ router.get("/", getBirthdays);
 router.get("/:id", getBirthday);
 
 // post a new birthday
-router.post("/", createBirthday);
+router.post("/", upload.single("file"), createBirthday);
 
 // delete a birthday
 router.delete("/:id", deleteBirthday);

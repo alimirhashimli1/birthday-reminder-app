@@ -8,11 +8,12 @@ const BirthdayForm = () => {
   const [note, setNote] = useState("");
   const [birthdate, setBirthdate] = useState("");
   const [error, setError] = useState(null);
+  const [imageUrl, setImageUrl] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const birthday = { name, surname, note, birthdate };
+    const birthday = { name, surname, note, birthdate, picture: imageUrl };
 
     const response = await fetch("/api/birthdays", {
       method: "POST",
@@ -49,7 +50,10 @@ const BirthdayForm = () => {
       });
       const data = await response.json();
       console.log("File uploaded successfully:", data.url);
+
       // Set the URL to state or pass it to your backend along with other form data
+      // For now, let's set it to state
+      setImageUrl(data.url);
     } catch (error) {
       console.error("Error uploading file:", error);
     }
@@ -92,6 +96,7 @@ const BirthdayForm = () => {
         accept="image/*"
         onChange={(e) => handleFileUpload(e.target.files)}
       />
+      {error && <p className="error">{error}</p>}
       <button>Add Birthday</button>
     </form>
   );

@@ -53,11 +53,12 @@ const getBirthday = async (req, res) => {
 const createBirthday = async (req, res) => {
   const { name, surname, birthdate, note } = req.body;
 
-  // Upload picture to Google Cloud Storage
-  let pictureUrl = "";
-  if (req.file) {
-    try {
+  try {
+    let pictureUrl = "";
+    if (req.file) {
       const file = req.file;
+
+      // Upload picture to Google Cloud Storage
       const blob = bucket.file(file.originalname);
       const blobStream = blob.createWriteStream({
         resumable: false,
@@ -65,25 +66,39 @@ const createBirthday = async (req, res) => {
           contentType: file.mimetype,
         },
       });
+      blobStream.on("error", (err) => {
+        console.error("Error uploading file:", err);
+        res.status(500).json({ error: "Error uploading picture" });
+      });
       blobStream.on("finish", () => {
         pictureUrl = `https://storage.googleapis.com/${bucket.name}/${blob.name}`;
+
+        // Add birthday to database
+        Birthday.create({
+          name,
+          surname,
+          birthdate,
+          note,
+          picture: pictureUrl,
+        })
+          .then((birthday) => {
+            res.status(200).json(birthday, pictureUrl);
+          })
+          .catch((error) => {
+            res.status(400).json({ error: error.message });
+          });
       });
       blobStream.end(file.buffer);
-    } catch (error) {
-      return res.status(500).json({ error: "Error uploading picture" });
+    } else {
+      // Add birthday to database without picture URL
+      const birthday = await Birthday.create({
+        name,
+        surname,
+        birthdate,
+        note,
+      });
+      res.status(200).json(birthday);
     }
-  }
-
-  // Add birthday to database
-  try {
-    const birthday = await Birthday.create({
-      name,
-      surname,
-      birthdate,
-      note,
-      picture: pictureUrl,
-    });
-    res.status(200).json(birthday);
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
