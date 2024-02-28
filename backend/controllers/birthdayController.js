@@ -7,7 +7,7 @@ const multerGoogleStorage = require("multer-google-storage");
 // Create a new instance of Storage
 const storage = new Storage({
   projectId: "vivid-tuner-415422", // Replace "your-project-id" with your actual Google Cloud project ID
-  keyFilename: "../mykey.json",
+  keyFilename: "/mykey.json",
 });
 
 // name of the bucket where you want to store the images
@@ -55,11 +55,12 @@ const createBirthday = async (req, res) => {
 
   try {
     let pictureUrl = "";
-    if (req.file) {
-      const file = req.file;
+    if (req.files && req.files.length > 0) {
+      const file = req.files[0];
 
-      // Upload picture to Google Cloud Storage
-      const blob = bucket.file(file.originalname);
+      // Upload picture to Google Cloud Storage with a unique filename
+      const uniqueFileName = `${Date.now()}-${file.originalname}`;
+      const blob = storage.bucket(bucketName).file(uniqueFileName);
       const blobStream = blob.createWriteStream({
         resumable: false,
         metadata: {
@@ -71,7 +72,7 @@ const createBirthday = async (req, res) => {
         res.status(500).json({ error: "Error uploading picture" });
       });
       blobStream.on("finish", () => {
-        pictureUrl = `https://storage.googleapis.com/${bucket.name}/${blob.name}`;
+        pictureUrl = `https://storage.googleapis.com/${bucketName}/${uniqueFileName}`;
 
         // Add birthday to database
         Birthday.create({
@@ -82,7 +83,7 @@ const createBirthday = async (req, res) => {
           picture: pictureUrl,
         })
           .then((birthday) => {
-            res.status(200).json(birthday, pictureUrl);
+            res.status(200).json(birthday);
           })
           .catch((error) => {
             res.status(400).json({ error: error.message });
