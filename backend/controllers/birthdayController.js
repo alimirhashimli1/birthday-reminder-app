@@ -6,142 +6,114 @@ const multerGoogleStorage = require("multer-google-storage");
 
 // Create a new instance of Storage
 const storage = new Storage({
-  projectId: "vivid-tuner-415422", // Replace "your-project-id" with your actual Google Cloud project ID
-  keyFilename: "/mykey.json",
+  projectId: "vivid-tuner-415422", // Replace with your Google Cloud project ID
+  keyFilename: "../vivid-tuner-415422-37337cede4bc.json", // Path to your service account key file
 });
 
-// name of the bucket where you want to store the images
+// Name of the bucket where you want to store the images
 const bucketName = "cakedaybuddyimages";
 
-// set up multer for file upload
+// Set up multer for file upload
 const upload = multer({
   storage: multerGoogleStorage.storageEngine({
     bucket: bucketName,
-    projectId: "vivid-tuner-415422", // Replace "your-project-id" with your actual Google Cloud project ID
-    keyFilename: "../mykey.json",
-    filename: function (req, file, cb) {
+    projectId: "vivid-tuner-415422", // Replace with your Google Cloud project ID
+    keyFilename: "../vivid-tuner-415422-37337cede4bc.json", // Path to your service account key file
+    filename: (req, file, cb) => {
       cb(null, Date.now().toString() + "-" + file.originalname);
     },
   }),
-});
+}).single("file"); // Assuming you're uploading a single file with the field name "file"
 
-// get all birthdays
+// Get all birthdays
 const getBirthdays = async (req, res) => {
-  const birthdays = await Birthday.find({}).sort({ createdAt: -1 });
-
-  res.status(200).json(birthdays);
+  try {
+    const birthdays = await Birthday.find({}).sort({ createdAt: -1 });
+    res.status(200).json(birthdays);
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error" });
+  }
 };
 
-// get a single birthday
+// Get a single birthday
 const getBirthday = async (req, res) => {
   const { id } = req.params;
-
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(404).json({ error: "No such birthday" });
+  try {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(404).json({ error: "No such birthday" });
+    }
+    const birthday = await Birthday.findById(id);
+    if (!birthday) {
+      return res.status(404).json({ error: "No such birthday" });
+    }
+    res.status(200).json(birthday);
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error" });
   }
-
-  const birthday = await Birthday.findById(id);
-
-  if (!birthday) {
-    return res.status(404).json({ error: "No such birthday" });
-  }
-
-  res.status(200).json(birthday);
 };
 
-// create a birthday
-const createBirthday = async (req, res) => {
-  const { name, surname, birthdate, note } = req.body;
+// Create a birthday
+const createBirthday = (req, res) => {
+  upload(req, res, async (err) => {
+    if (err instanceof multer.MulterError) {
+      return res.status(400).json({ error: "Multer error" });
+    } else if (err) {
+      return res.status(500).json({ error: "Internal server error" });
+    }
 
-  try {
-    let pictureUrl = "";
-    if (req.files && req.files.length > 0) {
-      const file = req.files[0];
-
-      // Upload picture to Google Cloud Storage with a unique filename
-      const uniqueFileName = `${Date.now()}-${file.originalname}`;
-      const blob = storage.bucket(bucketName).file(uniqueFileName);
-      const blobStream = blob.createWriteStream({
-        resumable: false,
-        metadata: {
-          contentType: file.mimetype,
-        },
-      });
-      blobStream.on("error", (err) => {
-        console.error("Error uploading file:", err);
-        res.status(500).json({ error: "Error uploading picture" });
-      });
-      blobStream.on("finish", () => {
-        pictureUrl = `https://storage.googleapis.com/${bucketName}/${uniqueFileName}`;
-
-        // Add birthday to database
-        Birthday.create({
-          name,
-          surname,
-          birthdate,
-          note,
-          picture: pictureUrl,
-        })
-          .then((birthday) => {
-            res.status(200).json(birthday);
-          })
-          .catch((error) => {
-            res.status(400).json({ error: error.message });
-          });
-      });
-      blobStream.end(file.buffer);
-    } else {
-      // Add birthday to database without picture URL
+    const { name, surname, birthdate, note } = req.body;
+    const pictureUrl = req.file ? req.file.path : null; // Assuming multer saves the file path
+    // console.log(pictureUrl);
+    try {
       const birthday = await Birthday.create({
         name,
         surname,
         birthdate,
         note,
+        picture: pictureUrl,
       });
       res.status(200).json(birthday);
+    } catch (error) {
+      res.status(400).json({ error: error.message });
     }
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
+  });
 };
 
-// delete a birthday
+// Delete a birthday
 const deleteBirthday = async (req, res) => {
   const { id } = req.params;
-
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(404).json("No such birthday");
+  try {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(404).json("No such birthday");
+    }
+    const birthday = await Birthday.findOneAndDelete({ _id: id });
+    if (!birthday) {
+      return res.status(404).json({ error: "No such birthday" });
+    }
+    res.status(200).json(birthday);
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error" });
   }
-
-  const birthday = await Birthday.findOneAndDelete({ _id: id });
-
-  if (!birthday) {
-    return res.status(404).json({ error: "No such birthday" });
-  }
-
-  res.status(200).json(birthday);
 };
 
-// edit a birthday
+// Edit a birthday
 const updateBirthday = async (req, res) => {
   const { id } = req.params;
-
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(404).json("No such birthday");
-  }
-
-  const birthday = await Birthday.findOneAndUpdate(
-    { _id: id },
-    {
-      ...req.body,
+  try {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(404).json("No such birthday");
     }
-  );
-
-  if (!birthday) {
-    return res.status(404).json({ error: "No such workout" });
+    const birthday = await Birthday.findOneAndUpdate(
+      { _id: id },
+      { ...req.body }
+    );
+    if (!birthday) {
+      return res.status(404).json({ error: "No such birthday" });
+    }
+    res.status(200).json(birthday);
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error" });
   }
-
-  res.status(200).json(birthday);
 };
 
 module.exports = {

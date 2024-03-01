@@ -49,7 +49,7 @@ const BirthdayForm = () => {
         body: formData,
       });
       const data = await response.json();
-      console.log("File uploaded successfully:", data.url);
+      console.log("File uploaded successfully:", data.filename);
 
       // Set the URL to state or pass it to your backend along with other form data
       // For now, let's set it to state
@@ -60,7 +60,11 @@ const BirthdayForm = () => {
   };
 
   return (
-    <form className="create" onSubmit={handleSubmit}>
+    <form
+      className="create"
+      onSubmit={handleSubmit}
+      encType="multipart/form-data"
+    >
       <h3>Add a Birthday</h3>
 
       <label>Name</label>
