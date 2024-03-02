@@ -58,7 +58,6 @@ const BirthdayForm = () => {
       console.error("Error uploading file:", error);
     }
   };
-
   return (
     <form
       className="create"
