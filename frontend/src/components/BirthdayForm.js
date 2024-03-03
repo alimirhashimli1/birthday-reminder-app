@@ -42,6 +42,7 @@ const BirthdayForm = () => {
     const file = files[0];
     const formData = new FormData();
     formData.append("file", file);
+    console.log("Formdata: ", formData);
 
     try {
       const response = await fetch("/api/upload", {
@@ -49,7 +50,7 @@ const BirthdayForm = () => {
         body: formData,
       });
       const data = await response.json();
-      console.log("File uploaded successfully:", data.filename);
+      console.log("File uploaded successfully:", data.url);
 
       // Set the URL to state or pass it to your backend along with other form data
       // For now, let's set it to state

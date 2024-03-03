@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const { Storage } = require("@google-cloud/storage");
 const multer = require("multer");
 const multerGoogleStorage = require("multer-google-storage");
+const { uploadFile } = require("../upload");
 
 // Create a new instance of Storage
 const storage = new Storage({
@@ -54,6 +55,8 @@ const getBirthday = async (req, res) => {
 
 // Create a birthday
 const createBirthday = (req, res) => {
+  // console.log(req.body.file.originalname);
+  uploadFile("./uploads/test.png", req.body.filename);
   upload(req, res, async (err) => {
     if (err instanceof multer.MulterError) {
       return res.status(400).json({ error: "Multer error" });
