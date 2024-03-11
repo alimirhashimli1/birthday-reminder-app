@@ -1,5 +1,23 @@
 const Birthday = require("../models/birthdayModel");
 const mongoose = require("mongoose");
+const multer = require("multer");
+const { Storage } = require("@google-cloud/storage");
+
+// Set up Google Cloud Storage
+const storage = new Storage({
+  keyFilename: "./vivid-tuner-415422-37337cede4bc.json",
+  projectId: "vivid-tuner-415422",
+});
+const bucketName = "cakedaybuddyimages";
+const bucket = storage.bucket(bucketName);
+
+// Set up Multer for file uploads
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB file size limit
+  },
+}).single("image");
 
 // get all birthdays
 const getBirthdays = async (req, res) => {
@@ -27,21 +45,40 @@ const getBirthday = async (req, res) => {
 
 // create a birthday
 const createBirthday = async (req, res) => {
-  const { name, surname, birthdate, note, picture } = req.body;
+  upload(req, res, async (err) => {
+    if (err) {
+      console.error("Error Uploading file:", err);
+      return res.status(500).json({ message: "Internal server error" });
+    }
 
-  // add doc to db
-  try {
-    const birthday = await Birthday.create({
-      name,
-      surname,
-      birthdate,
-      note,
-      picture,
-    });
-    res.status(200).json(birthday);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
+    if (!req.file) {
+      return res.status(400).json({ message: "No file uploaded" });
+    }
+    try {
+      const blob = bucket.file(req.file.originalname);
+      const blobStream = blob.createWriteStream();
+      blobStream.end(req.file.buffer);
+      const picture = `https://storage.googleapis.com/${bucketName}/${blob.name}`;
+
+      const { name, surname, birthdate, note } = req.body;
+
+      const birthday = await Birthday.create({
+        name,
+        surname,
+        birthdate,
+        note,
+        picture,
+      });
+      await birthday.save();
+
+      return res
+        .status(201)
+        .json({ message: "File uploaded successfully", picture });
+    } catch (error) {
+      console.error("Error uploading file:", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  });
 };
 
 // delete a birthday

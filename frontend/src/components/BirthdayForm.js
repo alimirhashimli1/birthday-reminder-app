@@ -1,109 +1,112 @@
 import React, { useState } from "react";
-import { useBirthdaysContext } from "../hooks/useBirthdaysContext";
 
-const BirthdayForm = () => {
-  const { dispatch } = useBirthdaysContext();
-  const [name, setName] = useState("");
-  const [surname, setSurname] = useState("");
-  const [note, setNote] = useState("");
-  const [birthdate, setBirthdate] = useState("");
-  const [error, setError] = useState(null);
-  const [imageUrl, setImageUrl] = useState("");
+const FormComponent = () => {
+  const [formData, setFormData] = useState({
+    name: "",
+    surname: "",
+    note: "",
+    birhdate: "",
+    picture: null,
+  });
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleFileChange = (e) => {
+    setFormData({
+      ...formData,
+      picture: e.target.files[0],
+    });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const birthday = { name, surname, note, birthdate, picture: imageUrl };
-
-    const response = await fetch("/api/birthdays", {
-      method: "POST",
-      body: JSON.stringify(birthday),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    const json = await response.json();
-
-    if (!response.ok) {
-      setError(json.error);
-    }
-    if (response.ok) {
-      setName("");
-      setSurname("");
-      setNote("");
-      setBirthdate("");
-      setError(null);
-      console.log("new birthday added", json);
-      dispatch({ type: "CREATE_BIRTHDAY", payload: json });
-    }
-  };
-
-  const handleFileUpload = async (files) => {
-    const file = files[0];
-    const formData = new FormData();
-    formData.append("file", file);
-    console.log("Formdata: ", formData);
+    const formDataToSend = new FormData();
+    formDataToSend.append("name", formData.name);
+    formDataToSend.append("surname", formData.surname);
+    formDataToSend.append("note", formData.note);
+    formDataToSend.append("birthdate", formData.birthdate);
+    formDataToSend.append("image", formData.picture);
 
     try {
-      const response = await fetch("/api/upload", {
+      const res = await fetch("/api/birthdays", {
         method: "POST",
-        body: formData,
+        body: formDataToSend,
       });
-      const data = await response.json();
-      console.log("File uploaded successfully:", data.url);
-
-      // Set the URL to state or pass it to your backend along with other form data
-      // For now, let's set it to state
-      setImageUrl(data.url);
-    } catch (error) {
-      console.error("Error uploading file:", error);
+      const data = await res.json();
+      console.log(data);
+      // Reset form fields
+      setFormData({
+        name: "",
+        surname: "",
+        note: "",
+        birhdate: "",
+        picture: null,
+      });
+    } catch (err) {
+      console.error(err);
     }
   };
+
   return (
-    <form
-      className="create"
-      onSubmit={handleSubmit}
-      encType="multipart/form-data"
-    >
-      <h3>Add a Birthday</h3>
-
-      <label>Name</label>
+    <form onSubmit={handleSubmit}>
+      <label htmlFor="name">Name:</label>
       <input
         type="text"
-        onChange={(e) => setName(e.target.value)}
-        value={name}
+        id="name"
+        name="name"
+        value={formData.name}
+        onChange={handleChange}
+        required
       />
-
-      <label>Surname</label>
+      <br />
+      <label htmlFor="surname">Surname:</label>
       <input
         type="text"
-        onChange={(e) => setSurname(e.target.value)}
-        value={surname}
+        id="surname"
+        name="surname"
+        value={formData.surname}
+        onChange={handleChange}
+        required
       />
-
-      <label>Note</label>
+      <br />
+      <label htmlFor="surname">note:</label>
       <input
         type="text"
-        onChange={(e) => setNote(e.target.value)}
-        value={note}
+        id="note"
+        name="note"
+        value={formData.note}
+        onChange={handleChange}
+        required
       />
-
-      <label>Birth date</label>
+      <br />
+      <label htmlFor="surname">birthdate:</label>
       <input
         type="date"
-        onChange={(e) => setBirthdate(e.target.value)}
-        value={birthdate}
+        id="birthdate"
+        name="birthdate"
+        value={formData.birthdate}
+        onChange={handleChange}
+        required
       />
-      <label>Profile Picture</label>
+      <br />
+      <label htmlFor="image">Upload Picture:</label>
       <input
         type="file"
+        id="image"
+        name="image"
+        onChange={handleFileChange}
         accept="image/*"
-        onChange={(e) => handleFileUpload(e.target.files)}
+        required
       />
-      {error && <p className="error">{error}</p>}
-      <button>Add Birthday</button>
+      <br />
+      <button type="submit">Submit</button>
     </form>
   );
 };
 
-export default BirthdayForm;
+export default FormComponent;
