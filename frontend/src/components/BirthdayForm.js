@@ -1,6 +1,8 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
+import { BirthdaysContext } from "../context/BirthdayContext";
 
 const FormComponent = () => {
+  const { dispatch } = useContext(BirthdaysContext);
   const [formData, setFormData] = useState({
     name: "",
     surname: "",
@@ -39,6 +41,8 @@ const FormComponent = () => {
       });
       const data = await res.json();
       console.log(data);
+      // Dispatch CREATE_BIRTHDAY action with the form data
+      dispatch({ type: "CREATE_BIRTHDAY", payload: formData });
       // Reset form fields
       setFormData({
         name: "",
