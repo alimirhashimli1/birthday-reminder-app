@@ -8,15 +8,21 @@ const BirthdayDetails = ({ birthday }) => {
 
   return (
     <div className="birthday-details">
-      <h4>
-        {birthday.name} {birthday.surname}
-      </h4>
-      <p>
-        <strong>Birthday on </strong>
-        {day}-{month}-{year}
-      </p>
-      <p className="birthday-note">{birthday.note}</p>
-      <img src={birthday.picture} alt="" width="100" height="100" />
+      {birthday.picture ? (
+        <div>
+          <h4>
+            {birthday.name} {birthday.surname}
+          </h4>
+          <p>
+            <strong>Birthday on </strong>
+            {day}-{month}-{year}
+          </p>
+          <p className="birthday-note">{birthday.note}</p>
+          <img src={birthday.picture} alt="" width="100" height="100" />
+        </div>
+      ) : (
+        <p>PLEASE WAIT THE IMAGE IS LOADING</p>
+      )}
     </div>
   );
 };
