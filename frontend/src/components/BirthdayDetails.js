@@ -30,7 +30,7 @@ const BirthdayDetails = ({ birthday }) => {
         URL.revokeObjectURL(imageSrc);
       }
     };
-  }, [birthday.picture]);
+  }, [imageSrc]);
 
   return (
     <div className="birthday-details">

@@ -3,6 +3,7 @@ import { BirthdaysContext } from "../context/BirthdayContext";
 
 const FormComponent = () => {
   const { dispatch } = useContext(BirthdaysContext);
+  const [submitting, setSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     surname: "",
@@ -27,6 +28,7 @@ const FormComponent = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSubmitting(true);
     const formDataToSend = new FormData();
     formDataToSend.append("name", formData.name);
     formDataToSend.append("surname", formData.surname);
@@ -51,8 +53,10 @@ const FormComponent = () => {
         birhdate: "",
         picture: null,
       });
+      setSubmitting(false);
     } catch (err) {
       console.error(err);
+      setSubmitting(false);
     }
   };
 
@@ -75,7 +79,6 @@ const FormComponent = () => {
         name="surname"
         value={formData.surname}
         onChange={handleChange}
-        required
       />
       <br />
       <label htmlFor="surname">note:</label>
@@ -85,7 +88,6 @@ const FormComponent = () => {
         name="note"
         value={formData.note}
         onChange={handleChange}
-        required
       />
       <br />
       <label htmlFor="surname">birthdate:</label>
