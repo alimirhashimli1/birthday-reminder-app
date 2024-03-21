@@ -54,26 +54,34 @@ const createBirthday = async (req, res) => {
     if (!req.file) {
       return res.status(400).json({ message: "No file uploaded" });
     }
+
     try {
       const blob = bucket.file(req.file.originalname);
       const blobStream = blob.createWriteStream();
       blobStream.end(req.file.buffer);
-      const picture = `https://storage.googleapis.com/${bucketName}/${blob.name}`;
 
-      const { name, surname, birthdate, note } = req.body;
+      blobStream.on("finish", async () => {
+        const picture = `https://storage.googleapis.com/${bucketName}/${blob.name}`;
+        const { name, surname, birthdate, note } = req.body;
 
-      const birthday = await Birthday.create({
-        name,
-        surname,
-        birthdate,
-        note,
-        picture,
+        const birthday = await Birthday.create({
+          name,
+          surname,
+          birthdate,
+          note,
+          picture,
+        });
+        await birthday.save();
+
+        return res
+          .status(201)
+          .json({ message: "File uploaded successfully", picture });
       });
-      await birthday.save();
 
-      return res
-        .status(201)
-        .json({ message: "File uploaded successfully", picture });
+      blobStream.on("error", (err) => {
+        console.error("Error uploading file to Google Cloud Storage:", err);
+        return res.status(500).json({ message: "Internal server error" });
+      });
     } catch (error) {
       console.error("Error uploading file:", error);
       return res.status(500).json({ message: "Internal server error" });
