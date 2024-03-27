@@ -8,7 +8,7 @@ const FormComponent = () => {
     name: "",
     surname: "",
     note: "",
-    birhdate: "",
+    birthdate: "",
     picture: null,
   });
 
@@ -34,7 +34,7 @@ const FormComponent = () => {
     formDataToSend.append("surname", formData.surname);
     formDataToSend.append("note", formData.note);
     formDataToSend.append("birthdate", formData.birthdate);
-    formDataToSend.append("image", formData.picture);
+    formDataToSend.append("picture", formData.picture);
 
     try {
       const res = await fetch("/api/birthdays", {
@@ -44,13 +44,13 @@ const FormComponent = () => {
       const data = await res.json();
       console.log(data);
       // Dispatch CREATE_BIRTHDAY action with the form data
-      dispatch({ type: "CREATE_BIRTHDAY", payload: formData });
+      dispatch({ type: "CREATE_BIRTHDAY", payload: formDataToSend });
       // Reset form fields
       setFormData({
         name: "",
         surname: "",
         note: "",
-        birhdate: "",
+        birthdate: "",
         picture: null,
       });
       setSubmitting(false);
@@ -100,11 +100,11 @@ const FormComponent = () => {
         required
       />
       <br />
-      <label htmlFor="image">Upload Picture:</label>
+      <label htmlFor="picture">Upload Picture:</label>
       <input
         type="file"
-        id="image"
-        name="image"
+        id="picture"
+        name="picture"
         onChange={handleFileChange}
         accept="image/*"
         required

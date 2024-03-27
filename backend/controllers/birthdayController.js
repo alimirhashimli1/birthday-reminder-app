@@ -17,7 +17,7 @@ const upload = multer({
   limits: {
     fileSize: 5 * 1024 * 1024, // 5MB file size limit
   },
-}).single("image");
+}).single("picture");
 
 // get all birthdays
 const getBirthdays = async (req, res) => {

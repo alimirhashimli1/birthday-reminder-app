@@ -7,7 +7,7 @@ const BirthdayDetails = ({ birthday }) => {
   const day = String(date.getDate()).padStart(2, "0");
 
   return (
-    <div className="birthday-details">
+    <div className="birthday-details" key={birthday._id}>
       <h4>
         {birthday.name} {birthday.surname}
       </h4>
