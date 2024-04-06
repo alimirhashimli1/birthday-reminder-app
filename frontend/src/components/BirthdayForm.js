@@ -29,22 +29,26 @@ const FormComponent = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
-    const formDataToSend = new FormData();
-    formDataToSend.append("name", formData.name);
-    formDataToSend.append("surname", formData.surname);
-    formDataToSend.append("note", formData.note);
-    formDataToSend.append("birthdate", formData.birthdate);
-    formDataToSend.append("picture", formData.picture);
 
     try {
+      const formDataToSend = new FormData();
+      formDataToSend.append("name", formData.name);
+      formDataToSend.append("surname", formData.surname);
+      formDataToSend.append("note", formData.note);
+      formDataToSend.append("birthdate", formData.birthdate);
+      formDataToSend.append("picture", formData.picture);
+
       const res = await fetch("/api/birthdays", {
         method: "POST",
         body: formDataToSend,
       });
+
       const data = await res.json();
       console.log(data);
+
       // Dispatch CREATE_BIRTHDAY action with the form data
-      dispatch({ type: "CREATE_BIRTHDAY", payload: formDataToSend });
+      dispatch({ type: "CREATE_BIRTHDAY", payload: formData });
+
       // Reset form fields
       setFormData({
         name: "",
@@ -53,6 +57,7 @@ const FormComponent = () => {
         birthdate: "",
         picture: null,
       });
+
       setSubmitting(false);
     } catch (err) {
       console.error(err);
@@ -81,7 +86,7 @@ const FormComponent = () => {
         onChange={handleChange}
       />
       <br />
-      <label htmlFor="surname">note:</label>
+      <label htmlFor="surname">Note:</label>
       <input
         type="text"
         id="note"
@@ -90,7 +95,7 @@ const FormComponent = () => {
         onChange={handleChange}
       />
       <br />
-      <label htmlFor="surname">birthdate:</label>
+      <label htmlFor="surname">Birthdate:</label>
       <input
         type="date"
         id="birthdate"

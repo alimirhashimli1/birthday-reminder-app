@@ -2,6 +2,7 @@ const Birthday = require("../models/birthdayModel");
 const mongoose = require("mongoose");
 const multer = require("multer");
 const { Storage } = require("@google-cloud/storage");
+const uuid = require("uuid"); // Import the UUID library
 
 // Set up Google Cloud Storage
 const storage = new Storage({
@@ -56,7 +57,8 @@ const createBirthday = async (req, res) => {
     }
 
     try {
-      const blob = bucket.file(req.file.originalname);
+      const uniqueFilename = `${uuid.v4()}-${req.file.originalname}`;
+      const blob = bucket.file(uniqueFilename);
       const blobStream = blob.createWriteStream();
       blobStream.end(req.file.buffer);
 
