@@ -13,6 +13,10 @@ export const birthdaysReducer = (state, action) => {
       return {
         birthdays: [action.payload, ...state.birthdays],
       };
+      case "DELETE_BIRTHDAY":
+        return {
+          birthdays: state.birthdays.filter((b) => b._id !== action.payload._id)
+        }
     default:
       return state;
   }
