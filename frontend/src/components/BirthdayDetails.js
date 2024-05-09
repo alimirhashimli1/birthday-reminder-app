@@ -7,6 +7,13 @@ const BirthdayDetails = ({ birthday }) => {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, "0");
   const day = String(date.getDate()).padStart(2, "0");
+  const [editing, setEditing] = useState(false)
+  const [newName, setNewName] = useState(birthday.Name)
+  const [newSurame, setNewSurame] = useState(birthday.surname)
+  const [newNote, setNewNote] = useState(birthday.Note)
+  const [newBirthdate, setNewBirthdate] = useState(birthday.Birthdate)
+  const [newPicture, setNewPicture] = useState(birthday.Picture)
+
 
   const handleClick = async () => {
     const response = await fetch("/api/birthdays/" + birthday._id, {
@@ -17,6 +24,29 @@ const BirthdayDetails = ({ birthday }) => {
     if(response.ok){
       dispatch({type: "DELETE_BIRTHDAY", payload: json})
     }
+  }
+
+  const handleEdit = async ( name, surname, note, birthdate, picture) => {
+    const response = await fetch("/api/birthdays/" + birthday._id, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({name, surname, note, birthdate, picture})
+    })
+    const json = await response.json()
+
+    if(!response.ok){
+      console.log(response.error)
+    }
+
+    if(response.ok){
+      dispatch({type: "EDIT_BIRTHDAY", payload: json})
+    }
+  }
+
+  const changeEditing = () => {
+    setEditing(true)
   }
 
   return (

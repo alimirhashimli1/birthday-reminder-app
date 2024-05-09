@@ -16,6 +16,12 @@ export const birthdaysReducer = (state, action) => {
       case "DELETE_BIRTHDAY":
         return {
           birthdays: state.birthdays.filter((b) => b._id !== action.payload._id)
+        };
+      case "EDIT_BIRTHDAY":
+        return {
+          birthdays: state.birthdays.map(birthday => (
+            birthday._id === action.payload._id ? action.payload : birthday
+          ))
         }
     default:
       return state;
