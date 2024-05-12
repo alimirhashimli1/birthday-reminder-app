@@ -116,20 +116,30 @@ const updateBirthday = async (req, res) => {
     return res.status(404).json("No such birthday");
   }
 
+  const { name, surname, note, birthdate, picture } = req.body;
+
+  // Ensure that the picture is a string
+  const updatedFields = {
+    name,
+    surname,
+    note,
+    birthdate,
+    // Ensure picture is a string, or handle empty value appropriately
+    picture: typeof picture === 'string' ? picture : ''
+  };
+
   const birthday = await Birthday.findOneAndUpdate(
     { _id: id },
-    {
-      ...req.body,
-    }
+    updatedFields,
+    { new: true } // to return the updated document
   );
 
   if (!birthday) {
-    return res.status(404).json({ error: "No such workout" });
+    return res.status(404).json({ error: "No such birthday" });
   }
 
   res.status(200).json(birthday);
 };
-
 module.exports = {
   createBirthday,
   getBirthday,

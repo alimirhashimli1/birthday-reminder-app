@@ -1,67 +1,108 @@
-import {useBirthdaysContext} from "../hooks/useBirthdaysContext"
-import React, { useState, useEffect } from "react";
+import { useBirthdaysContext } from "../hooks/useBirthdaysContext";
+import React, { useState } from "react";
 
 const BirthdayDetails = ({ birthday }) => {
-  const {dispatch} = useBirthdaysContext()
+  const { dispatch } = useBirthdaysContext();
   const date = new Date(birthday.birthdate);
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, "0");
   const day = String(date.getDate()).padStart(2, "0");
-  const [editing, setEditing] = useState(false)
-  const [newName, setNewName] = useState(birthday.Name)
-  const [newSurame, setNewSurame] = useState(birthday.surname)
-  const [newNote, setNewNote] = useState(birthday.Note)
-  const [newBirthdate, setNewBirthdate] = useState(birthday.Birthdate)
-  const [newPicture, setNewPicture] = useState(birthday.Picture)
-
+  const [editing, setEditing] = useState(false);
+  const [newName, setNewName] = useState(birthday.name);
+  const [newSurname, setNewSurname] = useState(birthday.surname);
+  const [newNote, setNewNote] = useState(birthday.note);
+  const [newBirthdate, setNewBirthdate] = useState(birthday.birthdate);
+  const [newPicture, setNewPicture] = useState(birthday.picture);
 
   const handleClick = async () => {
     const response = await fetch("/api/birthdays/" + birthday._id, {
       method: "DELETE"
-    })
-    const json = await response.json()
+    });
+    const json = await response.json();
 
-    if(response.ok){
-      dispatch({type: "DELETE_BIRTHDAY", payload: json})
+    if (response.ok) {
+      dispatch({ type: "DELETE_BIRTHDAY", payload: json });
     }
-  }
+  };
 
-  const handleEdit = async ( name, surname, note, birthdate, picture) => {
+  const handleEdit = async () => {
     const response = await fetch("/api/birthdays/" + birthday._id, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({name, surname, note, birthdate, picture})
-    })
-    const json = await response.json()
+      body: JSON.stringify({
+        name: newName,
+        surname: newSurname,
+        note: newNote,
+        birthdate: newBirthdate,
+        picture: newPicture
+      })
+    });
+    const json = await response.json();
 
-    if(!response.ok){
-      console.log(response.error)
+    if (response.ok) {
+      dispatch({ type: "EDIT_BIRTHDAY", payload: json });
+      setEditing(false); // Exit editing mode after successful edit
+    } else {
+      console.error("Error editing birthday:", json.error);
     }
+  };
 
-    if(response.ok){
-      dispatch({type: "EDIT_BIRTHDAY", payload: json})
-    }
-  }
+  const handleChangePicture = e => {
+    setNewPicture(e.target.files[0]);
+  };
 
-  const changeEditing = () => {
-    setEditing(true)
-  }
+  const handleSave = () => {
+    handleEdit();
+  };
 
   return (
     <div className="birthday-details" key={birthday._id}>
-      <h4>
-        {birthday.name} {birthday.surname}
-      </h4>
-      <p>
-        <strong>Birthday on </strong>
-        {day}-{month}-{year}
-      </p>
-      <p className="birthday-note">{birthday.note}</p>
-      <img src={birthday.picture} alt="" width="100" height="100" />
-      <span onClick={handleClick}>delete</span>
-      
+      {editing ? (
+        <>
+          <span onClick={handleSave}>Save</span>
+          <input
+            type="text"
+            value={newName}
+            onChange={(e) => setNewName(e.target.value)}
+          />
+          <input
+            type="text"
+            value={newSurname}
+            onChange={(e) => setNewSurname(e.target.value)}
+          />
+          <input
+            type="text"
+            value={newNote}
+            onChange={(e) => setNewNote(e.target.value)}
+          />
+          <input
+            type="date"
+            value={newBirthdate}
+            onChange={(e) => setNewBirthdate(e.target.value)}
+          />
+          <input
+            type="file"
+            onChange={handleChangePicture}
+            accept="image/*"
+          />
+        </>
+      ) : (
+        <>
+          <h4>
+            {birthday.name} {birthday.surname}
+          </h4>
+          <p>
+            <strong>Birthday on </strong>
+            {day}-{month}-{year}
+          </p>
+          <p className="birthday-note">{birthday.note}</p>
+          <img src={birthday.picture} alt="" width="100" height="100" />
+          <span onClick={handleClick}>delete</span>
+          <span onClick={() => setEditing(true)}>Edit</span>
+        </>
+      )}
     </div>
   );
 };
