@@ -1,5 +1,5 @@
-import { useBirthdaysContext } from "../hooks/useBirthdaysContext";
 import React, { useState } from "react";
+import { useBirthdaysContext } from "../hooks/useBirthdaysContext";
 
 const BirthdayDetails = ({ birthday }) => {
   const { dispatch } = useBirthdaysContext();
@@ -26,30 +26,33 @@ const BirthdayDetails = ({ birthday }) => {
   };
 
   const handleEdit = async () => {
-    const response = await fetch("/api/birthdays/" + birthday._id, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        name: newName,
-        surname: newSurname,
-        note: newNote,
-        birthdate: newBirthdate,
-        picture: newPicture
-      })
-    });
-    const json = await response.json();
+    const formData = new FormData();
+    formData.append("name", newName);
+    formData.append("surname", newSurname);
+    formData.append("note", newNote);
+    formData.append("birthdate", newBirthdate);
+    formData.append("picture", newPicture);
 
-    if (response.ok) {
-      dispatch({ type: "EDIT_BIRTHDAY", payload: json });
-      setEditing(false); // Exit editing mode after successful edit
-    } else {
-      console.error("Error editing birthday:", json.error);
+    try {
+      const response = await fetch("/api/birthdays/" + birthday._id, {
+        method: "PATCH",
+        body: formData
+      });
+
+      if (response.ok) {
+        const updatedBirthday = await response.json();
+        dispatch({ type: "EDIT_BIRTHDAY", payload: updatedBirthday });
+        setEditing(false); // Exit editing mode after successful edit
+      } else {
+        const error = await response.json();
+        console.error("Error editing birthday:", error);
+      }
+    } catch (error) {
+      console.error("Error editing birthday:", error.message);
     }
   };
 
-  const handleChangePicture = e => {
+  const handleChangePicture = (e) => {
     setNewPicture(e.target.files[0]);
   };
 
@@ -84,6 +87,7 @@ const BirthdayDetails = ({ birthday }) => {
           />
           <input
             type="file"
+            name="picture"
             onChange={handleChangePicture}
             accept="image/*"
           />

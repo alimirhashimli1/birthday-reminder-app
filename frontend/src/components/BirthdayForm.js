@@ -86,7 +86,7 @@ const FormComponent = () => {
         onChange={handleChange}
       />
       <br />
-      <label htmlFor="surname">Note:</label>
+      <label htmlFor="note">Note:</label>
       <input
         type="text"
         id="note"
@@ -95,7 +95,7 @@ const FormComponent = () => {
         onChange={handleChange}
       />
       <br />
-      <label htmlFor="surname">Birthdate:</label>
+      <label htmlFor="birthdate">Birthdate:</label>
       <input
         type="date"
         id="birthdate"
