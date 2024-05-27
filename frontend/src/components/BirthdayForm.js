@@ -11,6 +11,7 @@ const FormComponent = () => {
     birthdate: "",
     picture: null,
   });
+  const [previewURL, setPreviewURL] = useState(""); // State to store the image preview URL
 
   const handleChange = (e) => {
     setFormData({
@@ -20,10 +21,15 @@ const FormComponent = () => {
   };
 
   const handleFileChange = (e) => {
+    const file = e.target.files[0];
     setFormData({
       ...formData,
-      picture: e.target.files[0],
+      picture: file,
     });
+    
+    // Create a URL for previewing the image
+    const imageURL = URL.createObjectURL(file);
+    setPreviewURL(imageURL);
   };
 
   const handleSubmit = async (e) => {
@@ -46,8 +52,8 @@ const FormComponent = () => {
       const data = await res.json();
       console.log(data);
 
-      // Dispatch CREATE_BIRTHDAY action with the form data
-      dispatch({ type: "CREATE_BIRTHDAY", payload: formData });
+      // Dispatch CREATE_BIRTHDAY action with the response data
+      dispatch({ type: "CREATE_BIRTHDAY", payload: data });
 
       // Reset form fields
       setFormData({
@@ -57,6 +63,7 @@ const FormComponent = () => {
         birthdate: "",
         picture: null,
       });
+      setPreviewURL(""); // Reset preview URL
 
       setSubmitting(false);
     } catch (err) {
@@ -115,7 +122,10 @@ const FormComponent = () => {
         required
       />
       <br />
-      <button type="submit">Submit</button>
+      {previewURL && <img src={previewURL} alt="Preview" width="100" height="100" />} {/* Render the preview image */}
+      <button type="submit" disabled={submitting}>
+        {submitting ? "Submitting..." : "Submit"}
+      </button>
     </form>
   );
 };

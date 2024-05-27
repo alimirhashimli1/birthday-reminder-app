@@ -12,7 +12,8 @@ const BirthdayDetails = ({ birthday }) => {
   const [newSurname, setNewSurname] = useState(birthday.surname);
   const [newNote, setNewNote] = useState(birthday.note);
   const [newBirthdate, setNewBirthdate] = useState(birthday.birthdate);
-  const [newPicture, setNewPicture] = useState(birthday.picture);
+  const [newPicture, setNewPicture] = useState(null);
+  const [currentPicture, setCurrentPicture] = useState(birthday.picture);
 
   const handleClick = async () => {
     const response = await fetch("/api/birthdays/" + birthday._id, {
@@ -31,7 +32,10 @@ const BirthdayDetails = ({ birthday }) => {
     formData.append("surname", newSurname);
     formData.append("note", newNote);
     formData.append("birthdate", newBirthdate);
-    formData.append("picture", newPicture);
+
+    if (newPicture) {
+      formData.append("picture", newPicture);
+    }
 
     try {
       const response = await fetch("/api/birthdays/" + birthday._id, {
@@ -42,6 +46,7 @@ const BirthdayDetails = ({ birthday }) => {
       if (response.ok) {
         const updatedBirthday = await response.json();
         dispatch({ type: "EDIT_BIRTHDAY", payload: updatedBirthday });
+        setCurrentPicture(updatedBirthday.picture);
         setEditing(false); // Exit editing mode after successful edit
       } else {
         const error = await response.json();
@@ -102,7 +107,10 @@ const BirthdayDetails = ({ birthday }) => {
             {day}-{month}-{year}
           </p>
           <p className="birthday-note">{birthday.note}</p>
-          <img src={birthday.picture} alt="" width="100" height="100" />
+          <img src={currentPicture
+
+            
+          } alt="" width="100" height="100" />
           <span onClick={handleClick}>delete</span>
           <span onClick={() => setEditing(true)}>Edit</span>
         </>
