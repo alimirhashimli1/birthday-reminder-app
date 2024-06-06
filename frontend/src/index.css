@@ -67,6 +67,10 @@ header a {
   color: #333;
 }
 
+.birthday-details span:first-of-type {
+  margin-right: 50px;
+}
+
 .birthday-note {
   color: rgb(163, 28, 50) !important;
   font-weight: 500;

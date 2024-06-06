@@ -3,6 +3,7 @@ const express = require("express");
 // const cors = require("cors");
 const mongoose = require("mongoose");
 const birthdayRoutes = require("./routes/birthdays");
+const userRoutes = require("./routes/user");
 
 //express
 const app = express();
@@ -13,6 +14,7 @@ app.use(express.json());
 
 // routes
 app.use("/api/birthdays", birthdayRoutes);
+app.use("/api/user", userRoutes);
 
 // connect to db
 mongoose
